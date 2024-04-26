@@ -10,7 +10,14 @@ onMounted(() => {
   fetchMovieData();
 });
 
-function fetchMovieData() {
+function fetchMovieData(movieType) {
+  let url = '';
+
+  if (['now_playing', 'popular', 'top_rated'].includes(movieType)) {
+    url = `https://api.themoviedb.org/3/movie/${movieType}?language=ko`;
+  } else {
+    url = `https://api.themoviedb.org/3/search/movie?query=${movieType}&language=ko`;
+  }
   
   const options = {
   method: 'GET',
@@ -20,7 +27,7 @@ function fetchMovieData() {
   }
 };
 
-fetch('https://api.themoviedb.org/3/movie/now_playing?language=ko', options)
+fetch(url, options)
   .then(response => response.json())
   .then(response => {
     console.log(response.results);
@@ -29,10 +36,22 @@ fetch('https://api.themoviedb.org/3/movie/now_playing?language=ko', options)
   .catch(err => console.error(err));
 }
 
+function handleLinkClick(e) {
+  console.log(e);
+  fetchMovieData(e)
+}
+
+function handleSearchInputType(e) {
+  fetchMovieData(e);
+}
+
 </script>
 
 <template>
-  <movie-header/>
+  <movie-header 
+      @linkClick="handleLinkClick"
+      @searchInputType="handleSearchInputType"
+  />
   <movie-list :movies="movies"/>
   <movie-footer/>
 </template>
